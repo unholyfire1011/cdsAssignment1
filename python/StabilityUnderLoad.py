@@ -49,4 +49,4 @@ if __name__ == "__main__":
     for load in [0.5, 1.0, 1.5, 2.0]:
         results = test_stability(load)
         print(f"{results['load_factor']:10.1f} | {results['matrix_size']:11d} | {results['time_sec']:10.3f} | {results['memory_current_mb']:15.2f} | {results['memory_peak_mb']:12.2f}")
-Java:-
+
