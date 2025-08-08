@@ -1,25 +1,49 @@
-#Code creates a matrix1 having 10000 elements doubles the numbers and stores it a new array and squares the numbers from first array and then stores it in seperate array.
-import sys
+#Generate all prime numbers up to a fixed limit (LIMIT = 500,000) using the Sieve of Eratosthenes algorithim.
+#Simulate additional memory load by storing extra data for each prime.
+#Measure and print the memory usage.
 
-def memory_test(): 
-    # Step 1: Create first array
-    array1 = list(range(10000))
+import psutil
+import os
+
+LIMIT = 500000
+
+def get_memory_usage():
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss / (1024 * 1024)  # MB
+
+def main():
+ 
     
-    # Step 2: Create doubled array
-    array2 = [x * 2 for x in array1]
+    start_memory = get_memory_usage()
     
-    # Step 3: Create squared array  
-    array3 = [x * x for x in array1]
+    # Create large boolean list
+    sieve = [True] * (LIMIT + 1)
+    sieve[0] = sieve[1] = False
     
-    # Calculate memory usage
-    mem1 = sys.getsizeof(array1) + sum(sys.getsizeof(x) for x in array1[:10])
-    mem2 = sys.getsizeof(array2) + sum(sys.getsizeof(x) for x in array2[:10]) 
-    mem3 = sys.getsizeof(array3) + sum(sys.getsizeof(x) for x in array3[:10])
+    # Sieve algorithm
+    p = 2
+    while p * p <= LIMIT:
+        if sieve[p]:
+            for i in range(p * p, LIMIT + 1, p):
+                sieve[i] = False
+        p += 1
     
-    total_memory = (mem1 + mem2 + mem3) / (1024 * 1024)  # Convert to MB
+    # Collect primes and create memory pressure
+    primes = []
+    extra_data = []
     
-    print(f"Array1 size: {len(array1)}")
-    print(f"Array2 size: {len(array2)}")
-    print(f"Array3 size: {len(array3)}")
-    print(f"Total memory: {total_memory:.2f} MB")
-    print(f"Sample values: {array1[100]}, {array2[100]}, {array3[100]}")
+    for i in range(2, LIMIT + 1):
+        if sieve[i]:
+            primes.append(i)
+            # Add memory pressure
+            temp = [i + j for j in range(50)]
+            extra_data.append(temp)
+    
+    peak_memory = get_memory_usage()
+    
+    print(f"Start memory: {start_memory:.1f} MB")
+    print(f"Peak memory: {peak_memory:.1f} MB")
+    print(f"Memory used: {peak_memory - start_memory:.1f} MB")
+
+if __name__ == "__main__":
+    main()
